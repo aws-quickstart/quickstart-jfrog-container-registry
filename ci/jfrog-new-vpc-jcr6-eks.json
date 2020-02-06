@@ -25,7 +25,7 @@
     },
     {
         "ParameterKey": "QSS3KeyPrefix",
-        "ParameterValue": "quickstart-jfrog-artifactory/"
+        "ParameterValue": "quickstart-jfrog-jcr/"
     },
     {
         "ParameterKey": "DatabaseInstance",
