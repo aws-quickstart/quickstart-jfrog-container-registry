@@ -62,6 +62,7 @@ Metadata:
         Parameters:
           - QsS3BucketName
           - QsS3KeyPrefix
+          - QsS3BucketRegion
           - LambdaZipsBucketName
     ParameterLabels:
       KeyPairName:
@@ -140,6 +141,8 @@ Metadata:
         default: Quick Start S3 bucket name
       QsS3KeyPrefix:
         default: Quick Start S3 key prefix
+      QsS3BucketRegion:
+        default: Quick Start S3 bucket region
       LambdaZipsBucketName:
         default: Lambda zips bucket name
 Parameters:
@@ -460,6 +463,10 @@ Parameters:
       can include numbers, lowercase letters, uppercase letters, hyphens (-), and
       forward slash (/).
     Type: String
+  QsS3BucketRegion:
+    Default: 'us-east-1'
+    Description: The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.
+    Type: String
   LambdaZipsBucketName:
     Description: '[OPTIONAL] The name of the S3 bucket where the Lambda .zip
       files should be placed. If you leave this parameter blank, an S3 bucket will be created.'
@@ -487,12 +494,21 @@ Rules:
 
 Conditions:
   EnableBastion: !Equals [!Ref 'ProvisionBastionHost', 'Enabled']
-
+  UsingDefaultBucket: !Equals [!Ref QsS3BucketName, 'aws-quickstart']
 Resources:
   JrogContainerRegistryEksStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Sub 'https://${QsS3BucketName}.s3.amazonaws.com/${QsS3KeyPrefix}submodules/quickstart-jfrog-artifactory/templates/jfrog-artifactory-eks-master.template.yaml'
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QsS3KeyPrefix}submodules/quickstart-jfrog-artifactory/templates/jfrog-artifactory-eks-master.template.yaml
+        - S3Bucket: !If
+            - UsingDefaultBucket
+            - !Sub 'aws-quickstart-${AWS::Region}'
+            - !Ref 'QsS3BucketName'
+          S3Region: !If
+            - UsingDefaultBucket
+            - !Ref 'AWS::Region'
+            - !Ref 'QsS3BucketRegion'
       Parameters:
         KeyPairName: !Ref KeyPairName
         AccessCidr: !Ref AccessCidr
@@ -501,8 +517,8 @@ Resources:
         KubeConfigKmsContext: !Ref KubeConfigKmsContext
         AvailabilityZones:
           Fn::Join:
-          - ','
-          - Ref: AvailabilityZones
+            - ','
+            - Ref: AvailabilityZones
         VpcCidr: !Ref VpcCidr
         PublicSubnet1Cidr: !Ref PublicSubnet1Cidr
         PublicSubnet2Cidr: !Ref PublicSubnet2Cidr
@@ -535,10 +551,16 @@ Resources:
         NodeInstanceType: !Ref NodeInstanceType
         NodeVolumeSize: !Ref NodeVolumeSize
         NumofSecondaryNodes: 2
-        QsS3BucketName: !Ref QsS3BucketName
-        QsS3KeyPrefix: !Sub "${QsS3KeyPrefix}submodules/quickstart-jfrog-artifactory/"
+        QsS3BucketName: !If
+          - UsingDefaultBucket
+          - !Sub 'aws-quickstart-${AWS::Region}'
+          - !Ref 'QsS3BucketName'
+        QsS3KeyPrefix: !Ref QsS3KeyPrefix
+        QsS3BucketRegion: !If
+          - UsingDefaultBucket
+          - !Ref 'AWS::Region'
+          - !Ref 'QsS3BucketRegion'
         LambdaZipsBucketName: !Ref LambdaZipsBucketName
-
 Outputs:
   JFrogContainerRegistryUrl:
     Value: !GetAtt JrogContainerRegistryEksStack.Outputs.ArtifactoryUrl
