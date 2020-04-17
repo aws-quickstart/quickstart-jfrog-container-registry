@@ -62,6 +62,7 @@ Metadata:
         Parameters:
           - QsS3BucketName
           - QsS3KeyPrefix
+          - QsS3BucketRegion
     ParameterLabels:
       KeyPairName:
         default: SSH key name
@@ -139,6 +140,8 @@ Metadata:
         default: Quick Start S3 bucket name
       QsS3KeyPrefix:
         default: Quick Start S3 key prefix
+      QsS3BucketRegion:
+        default: Quick Start S3 bucket region
 Parameters:
   KeyPairName:
     Description: The name of an existing public/private key pair, which allows you
@@ -471,15 +474,27 @@ Parameters:
       uppercase letters, hyphens (-), and forward slash (/).
     Default: quickstart-jfrog-container-registry/
     Type: String
-
+  QsS3BucketRegion:
+    Default: 'us-east-1'
+    Description: The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.
+    Type: String
 Conditions:
   EnableBastion: !Equals [!Ref 'ProvisionBastionHost', 'Enabled']
-
+  UsingDefaultBucket: !Equals [!Ref QsS3BucketName, 'aws-quickstart']
 Resources:
   JrogContainerRegistryStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Sub 'https://${QsS3BucketName}.s3.amazonaws.com/${QsS3KeyPrefix}submodules/quickstart-jfrog-artifactory/templates/jfrog-artifactory-ecs-master.template.yaml'
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QsS3KeyPrefix}submodules/quickstart-jfrog-artifactory/templates/jfrog-artifactory-ecs-master.template.yaml
+        - S3Bucket: !If
+            - UsingDefaultBucket
+            - !Sub 'aws-quickstart-${AWS::Region}'
+            - !Ref 'QsS3BucketName'
+          S3Region: !If
+            - UsingDefaultBucket
+            - !Ref 'AWS::Region'
+            - !Ref 'QsS3BucketRegion'
       Parameters:
         KeyPairName: !Ref KeyPairName
         AccessCidr: !Ref AccessCidr
@@ -522,9 +537,15 @@ Resources:
         DatabaseInstance: !Ref DatabaseInstance
         DatabaseAllocatedStorage: !Ref DatabaseAllocatedStorage
         MultiAzDatabase: !Ref MultiAzDatabase
-        QsS3BucketName: !Ref QsS3BucketName
-        QsS3KeyPrefix: !Sub "${QsS3KeyPrefix}submodules/quickstart-jfrog-artifactory/"
-
+        QsS3BucketName: !If
+          - UsingDefaultBucket
+          - !Sub 'aws-quickstart-${AWS::Region}'
+          - !Ref 'QsS3BucketName'
+        QsS3KeyPrefix: !Ref QsS3KeyPrefix
+        QsS3BucketRegion: !If
+          - UsingDefaultBucket
+          - !Ref 'AWS::Region'
+          - !Ref 'QsS3BucketRegion'
 Outputs:
   JFrogContainerRegistryUrl:
     Description: URL of the ELB to access JFrog Container Registry
