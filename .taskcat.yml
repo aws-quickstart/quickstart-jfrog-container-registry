@@ -2,10 +2,10 @@ project:
   name: quickstart-jfrog-container-registry
   owner: quickstart-eng@amazon.com
   s3_object_acl: public-read
-  #s3_bucket: tcat-theflash-3ey4q58e #Bucket to upload to, highly recommend re-using a bucket
+  s3_bucket: tcat-quickstart-jfrog-containe1bcdi71o
+  s3_regional_buckets: True
   lambda_source_path: submodules/quickstart-jfrog-artifactory/submodules/quickstart-amazon-eks/functions/source
   lambda_zip_path: submodules/quickstart-jfrog-artifactory/submodules/quickstart-amazon-eks/functions/packages
-  s3_enable_sig_v2: True # When v2 signature is enabled, the bastion bootstrap fails to GET THE SCRIPT!
   regions:
     - us-west-2
 
@@ -21,6 +21,7 @@ tests:
 #      DatabasePassword: "$[taskcat_genpass_8A]"
 #      QsS3BucketName: "$[taskcat_autobucket]"
 #      QsS3KeyPrefix: "quickstart-jfrog-container-registry/"
+#      QsS3BucketRegion: "$[taskcat_current_region]"
 #      KeystorePassword: "$[taskcat_genpass_8A]"
 #      AnsibleVaultPass: "$[taskcat_genpass_8A]"
 #      JcrServerName: "artifactory"
@@ -39,8 +40,9 @@ tests:
 #      DatabasePassword: "$[taskcat_genpass_8A]"
 #      QsS3BucketName: "$[taskcat_autobucket]"
 #      QsS3KeyPrefix: "quickstart-jfrog-container-registry/"
+#      QsS3BucketRegion: "$[taskcat_current_region]"
 #      DatabaseInstance: "db.m4.large"
-#      #DatabaseEngine: MySQL
+#      # DatabaseEngine: MySQL
 #      JcrVersion: "7.2.1"
 #      NumberOfSecondary: "2"
 #      AnsibleVaultPass: "$[taskcat_genpass_8A]"
@@ -57,10 +59,11 @@ tests:
 #      RemoteAccessCidr: "10.0.0.0/16"
 #      AccessCidr: "10.0.0.0/16"
 #      AvailabilityZones: "$[taskcat_genaz_3]"
-#      #DatabaseEngine: MySQL
+#      # DatabaseEngine: MySQL
 #      DatabasePassword: "$[taskcat_genpass_8A]"
 #      QsS3BucketName: "$[taskcat_autobucket]"
 #      QsS3KeyPrefix: "quickstart-jfrog-container-registry/"
+#      QsS3BucketRegion: "$[taskcat_current_region]"
 #      DatabaseInstance: "db.m5.large"
 #      JcrVersion: "7.2.1"
 #      JcrServerName: "artifactory"
