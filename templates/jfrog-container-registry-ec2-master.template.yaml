@@ -495,7 +495,7 @@ Resources:
         DatabaseAllocatedStorage: !Ref DatabaseAllocatedStorage
         MultiAzDatabase: !Ref MultiAzDatabase
         QsS3BucketName: !Ref QsS3BucketName
-        QsS3KeyPrefix: !Ref QsS3KeyPrefix
+        QsS3KeyPrefix: !Sub "${QsS3KeyPrefix}submodules/quickstart-jfrog-artifactory/"
         QsS3BucketRegion: !Ref QsS3BucketRegion
 Outputs:
   JFrogContainerRegistryUrl:
