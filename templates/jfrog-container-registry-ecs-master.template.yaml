@@ -487,14 +487,8 @@ Resources:
     Properties:
       TemplateURL: !Sub
         - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QsS3KeyPrefix}submodules/quickstart-jfrog-artifactory/templates/jfrog-artifactory-ecs-master.template.yaml
-        - S3Bucket: !If
-            - UsingDefaultBucket
-            - !Sub 'aws-quickstart-${AWS::Region}'
-            - !Ref 'QsS3BucketName'
-          S3Region: !If
-            - UsingDefaultBucket
-            - !Ref 'AWS::Region'
-            - !Ref 'QsS3BucketRegion'
+        - S3Bucket: !If [UsingDefaultBucket, !Sub '${QsS3BucketName}-${AWS::Region}', !Ref 'QsS3BucketName']
+          S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref 'QsS3BucketRegion']
       Parameters:
         KeyPairName: !Ref KeyPairName
         AccessCidr: !Ref AccessCidr

@@ -501,14 +501,8 @@ Resources:
     Properties:
       TemplateURL: !Sub
         - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QsS3KeyPrefix}submodules/quickstart-jfrog-artifactory/templates/jfrog-artifactory-eks-master.template.yaml
-        - S3Bucket: !If
-            - UsingDefaultBucket
-            - !Sub 'aws-quickstart-${AWS::Region}'
-            - !Ref 'QsS3BucketName'
-          S3Region: !If
-            - UsingDefaultBucket
-            - !Ref 'AWS::Region'
-            - !Ref 'QsS3BucketRegion'
+        - S3Bucket: !If [UsingDefaultBucket, !Sub '${QsS3BucketName}-${AWS::Region}', !Ref 'QsS3BucketName']
+          S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref 'QsS3BucketRegion']
       Parameters:
         KeyPairName: !Ref KeyPairName
         AccessCidr: !Ref AccessCidr
@@ -551,15 +545,9 @@ Resources:
         NodeInstanceType: !Ref NodeInstanceType
         NodeVolumeSize: !Ref NodeVolumeSize
         NumofSecondaryNodes: 2
-        QsS3BucketName: !If
-          - UsingDefaultBucket
-          - !Sub 'aws-quickstart-${AWS::Region}'
-          - !Ref 'QsS3BucketName'
+        QsS3BucketName: !Ref QsS3BucketName
         QsS3KeyPrefix: !Ref QsS3KeyPrefix
-        QsS3BucketRegion: !If
-          - UsingDefaultBucket
-          - !Ref 'AWS::Region'
-          - !Ref 'QsS3BucketRegion'
+        QsS3BucketRegion: !Ref QsS3BucketRegion
         LambdaZipsBucketName: !Ref LambdaZipsBucketName
 Outputs:
   JFrogContainerRegistryUrl:
