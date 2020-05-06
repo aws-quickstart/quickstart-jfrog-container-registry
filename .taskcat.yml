@@ -2,7 +2,7 @@ project:
   name: quickstart-jfrog-container-registry
   owner: quickstart-eng@amazon.com
   s3_object_acl: public-read
-  s3_bucket: tcat-quickstart-jfrog-containe1bcdi71o
+  s3_bucket: ''
   s3_regional_buckets: True
   lambda_source_path: submodules/quickstart-jfrog-artifactory/submodules/quickstart-amazon-eks/functions/source
   lambda_zip_path: submodules/quickstart-jfrog-artifactory/submodules/quickstart-amazon-eks/functions/packages
@@ -52,7 +52,7 @@ tests:
 #      MultiAzDatabase: "false"
 #    template: templates/jfrog-container-registry-ecs-master.template.yaml
 #    regions:
-#      - us-west-2
+#      - us-east-1
 #  jfrog-container-registry-eks-east-mysql:
 #    parameters:
 #      KeyPairName: "$[taskcat_getkeypair]"
